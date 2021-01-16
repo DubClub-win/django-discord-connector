@@ -3,6 +3,10 @@ from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User, Group 
 from django_discord_connector.models import DiscordUser, DiscordGroup, DiscordToken, DiscordClient
 from django_discord_connector.tasks import *
+import django_discord_connector
+
+def mock_discord_task(args=None, countdown=None):
+    pass
 
 class MockDiscordResponse():
     def __init__(self, status_code, response={}):
@@ -14,6 +18,29 @@ class MockDiscordResponse():
 
 class TestDiscordTaskSuite(TransactionTestCase):
     def setUp(self):
+        from django_discord_connector.signals import (
+            user_group_change_sync_discord_groups, 
+            remove_discord_user_on_discord_token_removal, 
+            sync_discord_groups_on_client_save)
+
+        from django.db.models.signals import (
+            m2m_changed, 
+            post_delete, 
+            post_save)
+
+        from django.contrib.auth.models import User
+        from django_discord_connector.models import DiscordToken, DiscordClient
+        m2m_changed.disconnect(
+            user_group_change_sync_discord_groups, sender=User.groups.through)
+
+        post_delete.disconnect(
+            remove_discord_user_on_discord_token_removal,
+            sender=DiscordToken
+        )
+        post_save.disconnect(
+            sync_discord_groups_on_client_save,
+            sender=DiscordClient
+        )
         DiscordClient.objects.create(
             callback_url="https://localhost:8000",
             server_id="1",

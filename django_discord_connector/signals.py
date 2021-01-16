@@ -1,11 +1,15 @@
 from django.dispatch import receiver
-from django.db.models.signals import m2m_changed, post_delete
+from django.db.models.signals import m2m_changed, post_delete, post_save 
 from django.contrib.auth.models import User
-from .models import DiscordUser, DiscordGroup, DiscordToken
-from .tasks import verify_discord_user_groups, remove_discord_user
+from .models import DiscordUser, DiscordGroup, DiscordToken, DiscordClient
+from .tasks import verify_discord_user_groups, remove_discord_user, sync_discord_groups
 
 import logging
 logger = logging.getLogger(__name__)
+
+@receiver(post_save, sender=DiscordClient)
+def sync_discord_groups_on_client_save(sender, **kwargs):
+    sync_discord_groups.apply_async()
 
 
 @receiver(m2m_changed, sender=User.groups.through)

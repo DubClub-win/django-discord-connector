@@ -22,10 +22,8 @@ class DiscordClient(DjangoSingleton):
     name_enforcement_schema = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        from django_discord_connector.tasks import sync_discord_groups
         if "discord.gg/" in self.invite_link:
             self.invite_link = self.invite_link.replace('discord.gg/', 'discordapp.com/api/invites/')
-        sync_discord_groups.apply_async()
         super(DiscordClient, self).save(*args, **kwargs)
 
     @staticmethod

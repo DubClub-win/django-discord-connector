@@ -1,13 +1,18 @@
 from unittest.mock import patch
 from django.test import TestCase
-from django.contrib.auth.models import User, Group 
-from django_discord_connector.models import DiscordUser, DiscordGroup, DiscordToken
+from django.contrib.auth.models import User, Group
+from django_discord_connector.models import (DiscordUser,
+                                             DiscordGroup,
+                                             DiscordToken,
+                                             DiscordClient)
 import django_discord_connector
-import logging 
+import logging
 logger = logging.getLogger('django_discord_connector')
 
-def mock_discord_task(args, countdown=None):
+
+def mock_discord_task(args=None, countdown=None):
     logger.info(f"args={args},countdown={countdown}")
+
 
 class TestDiscordSignalSuite(TestCase):
     def setUp(self):
@@ -38,6 +43,7 @@ class TestDiscordSignalSuite(TestCase):
             group=self.group
         )
 
+    @patch.object(django_discord_connector.signals.remove_discord_user, 'apply_async', mock_discord_task)
     def tearDown(self):
         try:
             self.user.delete()
@@ -56,12 +62,23 @@ class TestDiscordSignalSuite(TestCase):
             self.assertTrue("args=[1]" in message)
             self.assertTrue("countdown=30" in message)
 
-    
     @patch.object(django_discord_connector.signals.remove_discord_user, 'apply_async', mock_discord_task)
     def test_user_delete(self):
         with self.assertLogs('django_discord_connector', level='INFO') as cm:
             self.user.delete()
             message = cm.output[0]
             self.assertTrue("args=[1]" in message)
-        
 
+    @patch.object(django_discord_connector.signals.sync_discord_groups, 'apply_async', mock_discord_task)
+    def test_discord_client_update(self):
+        with self.assertLogs('django_discord_connector', level='INFO') as cm:
+            DiscordClient.objects.create(
+                callback_url="https://localhost:8000",
+                server_id="1",
+                client_id="1",
+                client_secret="null",
+                bot_token="null",
+                invite_link="https://localhost",
+            )
+            message = cm.output[0]
+            self.assertTrue("args=None" in message)

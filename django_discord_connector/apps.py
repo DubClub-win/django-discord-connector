@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from django.db.models.signals import m2m_changed, post_delete
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.apps import apps
 
 class DjangoDiscordConnectorConfig(AppConfig):
@@ -10,9 +10,13 @@ class DjangoDiscordConnectorConfig(AppConfig):
     url_slug = 'discord'
 
     def ready(self):
-        from .signals import user_group_change_sync_discord_groups, remove_discord_user_on_discord_token_removal
+        from .signals import (user_group_change_sync_discord_groups, 
+            remove_discord_user_on_discord_token_removal, 
+            sync_discord_groups_on_client_save)
+
         from django.contrib.auth.models import User
-        from django_discord_connector.models import DiscordToken
+        from django_discord_connector.models import DiscordToken, DiscordClient
+        
         m2m_changed.connect(
             user_group_change_sync_discord_groups, sender=User.groups.through)
 
@@ -20,6 +24,12 @@ class DjangoDiscordConnectorConfig(AppConfig):
             remove_discord_user_on_discord_token_removal,
             sender=DiscordToken
         )
+
+        post_save.connect(
+            sync_discord_groups_on_client_save,
+            sender=DiscordClient
+        )
+
         if apps.is_installed('packagebinder'):
             from .bindings import create_bindings
             create_bindings()

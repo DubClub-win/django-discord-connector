@@ -16,6 +16,7 @@ def mock_discord_task(args=None, countdown=None):
 
 class TestDiscordSignalSuite(TestCase):
     def setUp(self):
+        print(self._testMethodName)
         self.group = Group.objects.create(
             name="Group"
         )

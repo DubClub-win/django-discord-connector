@@ -1,6 +1,14 @@
-import os, sys
+import os
 from setuptools import find_packages, setup
-from setuptools.command.test import test
+
+install_requires = [
+    'django>=2.2.13',
+    'django-singleton-admin-2>=1.1.0',
+    'discord>=1.0.1',
+    'requests>=2.22.0',
+    'requests_oauthlib>=1.2.0',
+    'celery>=4.0.2',
+]
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
@@ -8,18 +16,19 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
+settings = __import__('django_discord_connector')
 setup(
-    name='django-discord-connector',
-    version=__import__('django_discord_connector').__version__,
+    name=settings.__package_name__,
+    version=settings.__version__,
     packages=find_packages(),
     include_package_data=True,
-    license='MIT License',
-    description='A simple Django application that adds Discord entities and SSO handling',
+    license=settings.__license__,
+    description=settings.__description__,
     long_description=README,
     long_description_content_type='text/markdown',
-    url='https://github.com/KryptedGaming/django-discord-connector',
-    author='porowns',
-    author_email='porowns@gmail.com',
+    url=settings.__github_url__,
+    author=settings.__author__,
+    author_email=settings.__author_email__,
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -32,13 +41,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    install_requires=[
-        'django>=2.2.13',
-        'django-singleton-admin-2>=1.1.0',
-        'discord>=1.0.1',
-        'requests>=2.22.0',
-        'requests_oauthlib>=1.2.0',
-        'celery>=4.0.2',
-    ],
-    test_suite='runtests.runtests',
+    install_requires=install_requires
 )

@@ -6,9 +6,12 @@
 #         \/        \/ \/                                    \/         \/   #
 
 __title__ = 'Django Discord Connector'
+__description__ = 'A Discord Connect by Krypted Gaming'
 __package_name__ = 'django-discord-connector'
+__github_url__ = 'git@github.com:KryptedGaming/django-discord-connector.git'
 __version__ = '1.2.2rc3'
 __author__ = 'Krypted Gaming'
+__author_email__ = 'porowns@gmail.com'
 __license__ = 'MIT License'
 __copyright__ = 'Copyright © 2017-2020 Krypted Gaming. All rights reserved.'
 default_app_config = "django_discord_connector.apps.DjangoDiscordConnectorConfig"

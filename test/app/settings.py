@@ -1,5 +1,8 @@
 import os
 
+# Celery configuration
+CELERY_ALWAYS_EAGER = True  # Forces celery to run locally for testing
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,10 +16,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_singleton_admin',
     'django_discord_connector',
-    'django_eveonline_connector', # integration tests
+    'django_eveonline_connector',  # integration tests
 ]
 
-ROOT_URLCONF = 'tests.app.urls'
+ROOT_URLCONF = 'test.app.urls'
 
 TEMPLATES = [
     {

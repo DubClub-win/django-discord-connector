@@ -1,18 +1,20 @@
+#!/usr/bin/env python
 import os
 import sys
-import django
 
-from django.conf import settings
-from django.test.utils import get_runner
-
-
-def runtests():
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.app.settings'
-    django.setup()
-    TestRunner = get_runner(settings)
-    test_runner = TestRunner()
-    failures = test_runner.run_tests(["tests"])
-    sys.exit(bool(failures))
-
-if __name__ == '__main__':
-    runtests()
+if __name__ == "__main__":
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'test.app.settings'
+    print(os.getcwd())
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError:
+        try:
+            import django
+        except ImportError:
+            raise ImportError(
+                "Couldn't import Django. Are you sure it's installed and "
+                "available on your PYTHONPATH environment variable? Did you "
+                "forget to activate a virtual environment?"
+            )
+        raise
+    execute_from_command_line(sys.argv.insert(1, 'test'))

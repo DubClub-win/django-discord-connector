@@ -176,7 +176,7 @@ def update_remote_discord_user_nickname(discord_user_id):
     elif responses[response.status_code] == "Too Many Requests":
         logger.warning(
             "[RATELIMIT] Updating nickname for Discord User %s" % (discord_user_id))
-        update_discord_user_nickname.apply_async(
+        update_remote_discord_user_nickname.apply_async(
             args=[discord_user_id], countdown=600)
     else:
         logger.error(
